@@ -13,17 +13,38 @@
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
 
     <style>
-div {
-  border: black 1px solid;
-}
-div.cardlist {
-  height: 200px;
-  overflow-y: scroll;
-}
-div.cardlist li:nth-child(even) {
-  background:lightgrey;
-}
+      div {
+        border: black 1px solid;
+      }
+      div.cardlist {
+        height: 200px;
+        overflow-y: scroll;
+      }
+      div.cardlist option:nth-child(even) {
+        background:lightgrey;
+      }
     </style>
+    <script>
+      $.getJSON("allsets.json", function(data) {
+        var cards = data['BNG'].cards;
+
+        var selectList = $('#cardlist');
+        cards.forEach(function(card) {
+          var option = document.createElement('option');
+          option.value = card.multiverseid;
+          selectList.append(option);
+          option.innerHTML = card.name;
+          jQuery.data(option, 'card', card);
+        });
+        $("#cardlist").change(function(data) {
+          var option = $("option:selected", this);
+          var card = jQuery.data(option[0], 'card');
+
+          var url = "http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + card.multiverseid + "&type=card";
+          document.getElementById('preview').src = url;
+        });
+      });
+    </script>
   </head>
   <body>
     <div class="container">
@@ -34,50 +55,12 @@ div.cardlist li:nth-child(even) {
       </div>
       <div class="row">
         <div class="col-md-3">
-          <img src="images/back.jpg" />
+          <img id="preview" src="images/back.jpg" />
           <form>
             <input type="text" />
+            <select id="cardlist" size="10">
+            </select>
           </form>
-          <div class="cardlist">
-            <ul class="list-unstyled">
-              <li>foo</li>
-              <li>foo</li>
-              <li>foo</li>
-              <li>foo</li>
-              <li>foo</li>
-              <li>foo</li>
-              <li>foo</li>
-              <li>foo</li>
-              <li>foo</li>
-              <li>foo</li>
-              <li>foo</li>
-              <li>foo</li>
-              <li>foo</li>
-              <li>foo</li>
-              <li>foo</li>
-              <li>foo</li>
-              <li>foo</li>
-              <li>foo</li>
-              <li>foo</li>
-              <li>foo</li>
-              <li>foo</li>
-              <li>foo</li>
-              <li>foo</li>
-              <li>foo</li>
-              <li>foo</li>
-              <li>foo</li>
-              <li>foo</li>
-              <li>foo</li>
-              <li>foo</li>
-              <li>foo</li>
-              <li>foo</li>
-              <li>foo</li>
-              <li>foo</li>
-              <li>foo</li>
-              <li>foo</li>
-              <li>foo</li>
-            </ul>
-          </div>
         </div>
         <div class="col-md-9">
           board
