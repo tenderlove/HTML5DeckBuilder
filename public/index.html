@@ -29,6 +29,10 @@
         text-align: center;
       }
 
+      #preview {
+        width: 223px;
+      }
+
       div.card img {
         width: 120px;
       }
@@ -51,10 +55,27 @@
         var height = maxidx * 25 + 180;
         $("div.boardlist").css({"height": height + "px"});
       }
+      function addOne() {
+        var option = $("#cardlist option:selected")[0];
+        var card = jQuery.data(option, 'card');
+
+        var div = document.createElement('div');
+        div.className = "card";
+        var img = document.createElement('img');
+        img.src = card.imgUrl;
+        $(div).append(img);
+        $("div.creatures").append(div);
+        alignImages();
+        return false;
+      }
+      function addFour() {
+        for(var i = 0; i < 4; i++) { addOne(); }
+        return false;
+      }
       $(document).ready(function() {
         alignImages();
-        //$("#addone").click(function() {
-        //});
+        $("#addone").click(addOne);
+        $("#addfour").click(addFour);
         $.getJSON("allsets.json", function(data) {
           var cards = data['BNG'].cards;
 
@@ -62,6 +83,7 @@
           cards.forEach(function(card) {
             var option = document.createElement('option');
             option.value = card.multiverseid;
+            card.imgUrl = "http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + card.multiverseid + "&type=card";
             selectList.append(option);
             option.innerHTML = card.name;
             jQuery.data(option, 'card', card);
@@ -69,9 +91,7 @@
           $("#cardlist").change(function(data) {
             var option = $("option:selected", this);
             var card = jQuery.data(option[0], 'card');
-
-            var url = "http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + card.multiverseid + "&type=card";
-            document.getElementById('preview').src = url;
+            document.getElementById('preview').src = card.imgUrl;
           });
         });
       });
@@ -92,6 +112,7 @@
             <select id="cardlist" size="10">
             </select>
             <button id="addone">Add One</button>
+            <button id="addfour">Add Four</button>
           </form>
         </div>
         <div class="col-md-9 board">
@@ -105,67 +126,9 @@
           </div>
           <div class="row boardlist">
             <!-- creatures -->
-            <div class="col-md-2">
-              <div class="card">
+            <div class="col-md-2 creatures">
+              <div class="card card-1">
                 <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378375&type=card" />
-              </div>
-              <div class="card">
-                <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378375&type=card" />
-              </div>
-              <div class="card">
-                <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378375&type=card" />
-              </div>
-              <div class="card">
-                <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378375&type=card" />
-              </div>
-              <div class="card">
-                <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378375&type=card" />
-              </div>
-              <div class="card">
-                <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378375&type=card" />
-              </div>
-              <div class="card">
-                <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378375&type=card" />
-              </div>
-              <div class="card">
-                <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378375&type=card" />
-              </div>
-              <div class="card">
-                <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378375&type=card" />
-              </div>
-              <div class="card">
-                <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378375&type=card" />
-              </div>
-              <div class="card">
-                <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378375&type=card" />
-              </div>
-              <div class="card">
-                <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378375&type=card" />
-              </div>
-              <div class="card">
-                <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378375&type=card" />
-              </div>
-              <div class="card">
-                <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378375&type=card" />
-              </div>
-
-              <div class="card">
-                <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378376&type=card" />
-              </div>
-              <div class="card">
-                <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378376&type=card" />
-              </div>
-              <div class="card">
-                <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378376&type=card" />
-              </div>
-              <div class="card">
-                <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378376&type=card" />
-              </div>
-              <div class="card">
-                <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378376&type=card" />
-              </div>
-              <div class="card">
-                <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378376&type=card" />
               </div>
             </div>
 
