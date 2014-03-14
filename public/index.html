@@ -20,28 +20,59 @@
         height: 200px;
         overflow-y: scroll;
       }
+
       div.cardlist option:nth-child(even) {
         background:lightgrey;
       }
+
+      div.card-headers {
+        text-align: center;
+      }
+
+      div.card img {
+        width: 120px;
+      }
     </style>
     <script>
-      $.getJSON("allsets.json", function(data) {
-        var cards = data['BNG'].cards;
-
-        var selectList = $('#cardlist');
-        cards.forEach(function(card) {
-          var option = document.createElement('option');
-          option.value = card.multiverseid;
-          selectList.append(option);
-          option.innerHTML = card.name;
-          jQuery.data(option, 'card', card);
+      function alignImages() {
+        var maxidx = 0;
+        var arr = Array.prototype.slice.call($(".board .boardlist")[0].children);
+        arr.forEach(function (div) {
+          var arr2 = Array.prototype.slice.call(div.children);
+          arr2.forEach(function (img, idx) {
+            if (maxidx < idx) {
+              maxidx = idx;
+            }
+            var pos = (idx * 25) + "px"
+            $(img).css({ "position": "absolute",
+                         "top": pos });
+          });
         });
-        $("#cardlist").change(function(data) {
-          var option = $("option:selected", this);
-          var card = jQuery.data(option[0], 'card');
+        var height = maxidx * 25 + 180;
+        $("div.boardlist").css({"height": height + "px"});
+      }
+      $(document).ready(function() {
+        alignImages();
+        //$("#addone").click(function() {
+        //});
+        $.getJSON("allsets.json", function(data) {
+          var cards = data['BNG'].cards;
 
-          var url = "http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + card.multiverseid + "&type=card";
-          document.getElementById('preview').src = url;
+          var selectList = $('#cardlist');
+          cards.forEach(function(card) {
+            var option = document.createElement('option');
+            option.value = card.multiverseid;
+            selectList.append(option);
+            option.innerHTML = card.name;
+            jQuery.data(option, 'card', card);
+          });
+          $("#cardlist").change(function(data) {
+            var option = $("option:selected", this);
+            var card = jQuery.data(option[0], 'card');
+
+            var url = "http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + card.multiverseid + "&type=card";
+            document.getElementById('preview').src = url;
+          });
         });
       });
     </script>
@@ -60,10 +91,134 @@
             <input type="text" />
             <select id="cardlist" size="10">
             </select>
+            <button id="addone">Add One</button>
           </form>
         </div>
-        <div class="col-md-9">
-          board
+        <div class="col-md-9 board">
+          <div class="row card-headers">
+            <div class="col-md-2">Creatures</div>
+            <div class="col-md-2">Spells</div>
+            <div class="col-md-2">Artifacts</div>
+            <div class="col-md-2">Enchantments</div>
+            <div class="col-md-2">Lands</div>
+            <div class="col-md-2">Plainswalkers</div>
+          </div>
+          <div class="row boardlist">
+            <!-- creatures -->
+            <div class="col-md-2">
+              <div class="card">
+                <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378375&type=card" />
+              </div>
+              <div class="card">
+                <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378375&type=card" />
+              </div>
+              <div class="card">
+                <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378375&type=card" />
+              </div>
+              <div class="card">
+                <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378375&type=card" />
+              </div>
+              <div class="card">
+                <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378375&type=card" />
+              </div>
+              <div class="card">
+                <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378375&type=card" />
+              </div>
+              <div class="card">
+                <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378375&type=card" />
+              </div>
+              <div class="card">
+                <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378375&type=card" />
+              </div>
+              <div class="card">
+                <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378375&type=card" />
+              </div>
+              <div class="card">
+                <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378375&type=card" />
+              </div>
+              <div class="card">
+                <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378375&type=card" />
+              </div>
+              <div class="card">
+                <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378375&type=card" />
+              </div>
+              <div class="card">
+                <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378375&type=card" />
+              </div>
+              <div class="card">
+                <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378375&type=card" />
+              </div>
+
+              <div class="card">
+                <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378376&type=card" />
+              </div>
+              <div class="card">
+                <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378376&type=card" />
+              </div>
+              <div class="card">
+                <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378376&type=card" />
+              </div>
+              <div class="card">
+                <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378376&type=card" />
+              </div>
+              <div class="card">
+                <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378376&type=card" />
+              </div>
+              <div class="card">
+                <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378376&type=card" />
+              </div>
+            </div>
+
+            <!-- spells -->
+            <div class="col-md-2">
+              <div class="card card-1">
+                <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378375&type=card" />
+              </div>
+              <div class="card card-2">
+                <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378375&type=card" />
+              </div>
+            </div>
+
+            <!-- artifacts -->
+            <div class="col-md-2">
+              <div class="card card-1">
+                <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378375&type=card" />
+              </div>
+              <div class="card card-2">
+                <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378375&type=card" />
+              </div>
+            </div>
+
+            <!-- enchantments -->
+            <div class="col-md-2">
+              <div class="card card-1">
+                <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378375&type=card" />
+              </div>
+              <div class="card card-2">
+                <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378375&type=card" />
+              </div>
+            </div>
+
+            <!-- lands -->
+            <div class="col-md-2">
+              <div class="card card-1">
+                <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378375&type=card" />
+              </div>
+              <div class="card card-2">
+                <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378375&type=card" />
+              </div>
+            </div>
+
+            <!-- plainswalkers -->
+            <div class="col-md-2">
+              <div class="card card-1">
+                <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378375&type=card" />
+              </div>
+              <div class="card card-2">
+                <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378375&type=card" />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
