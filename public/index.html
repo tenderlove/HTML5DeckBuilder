@@ -36,22 +36,57 @@
       div.card img {
         width: 120px;
       }
+
+      div.boardlist > div {
+        height: 100%;
+      }
     </style>
     <script>
+      var dragSrcEl = null;
+
       function Deck(cards) {
         this.cards = cards;
       }
 
-      Deck.prototype.addCard = function(card) {
+      Deck.prototype.handleDragStart = function(e) {
+        this.style.opacity = '0.4';
+      
+        dragSrcEl = this;
+      
+        e.dataTransfer.effectAllowed = 'move';
+      }
+
+      Deck.prototype.handleDragEnd = function(e) { this.style.opacity = '1.0'; };
+      Deck.prototype.handleDragOver = function(e) {
+        if (e.preventDefault) { e.preventDefault(); }
+        return false;
+      };
+
+
+      Deck.prototype.addCard = function(card, loc) {
         var div = document.createElement('div');
-        div.className = "card";
         var img = document.createElement('img');
+        var deck = this;
+
+        div.className = "card";
         img.src = card.imgUrl;
         img.setAttribute("draggable", true);
-        img.addEventListener('dragstart', handleDragStart, false);
-        img.addEventListener('dragend', handleDragEnd, false);
+        img.addEventListener('dragstart', this.handleDragStart, false);
+        img.addEventListener('dragend', this.handleDragEnd, false);
+        img.addEventListener('dragover', this.handleDragOver, false);
+        img.addEventListener('drop', function(e) {
+          if (e.stopPropagation) {
+            e.stopPropagation(); // stops the browser from redirecting.
+          }
+          console.log("dropped on image");
+          var card = jQuery.data(dragSrcEl, "card");
+          var column = e.target.parentNode.parentNode;
+          deck.addCard(card, $(column));
+          alignImages();
+          return false;
+        }, false);
         $(div).append(img);
-        $("div.creatures").append(div);
+        loc.append(div);
       }
 
       function alignImages() {
@@ -69,26 +104,16 @@
           });
         });
         var height = maxidx * 25 + 180;
+        if (height < 500) {
+          height = 500;
+        }
         $("div.boardlist").css({"height": height + "px"});
-      }
-      var dragSrcEl = null;
-      function handleDragStart(e) {
-        console.log("hi");
-        this.style.opacity = '0.4';
-      
-        dragSrcEl = this;
-      
-        e.dataTransfer.effectAllowed = 'move';
       }
 
       function handleDrop(e) {
         if (e.stopPropagation) {
           e.stopPropagation(); // stops the browser from redirecting.
         }
-        console.log("dropped");
-        console.log(e.target);
-        console.log(this);
-        console.log(dragSrcEl);
         var div = dragSrcEl.parentNode;
         div.parentNode.removeChild(div);
         alignImages();
@@ -100,13 +125,11 @@
         return false;
       }
 
-      function handleDragEnd(e) { this.style.opacity = '1.0'; }
-
       function addOne(deck) {
         var option = $("#cardlist option:selected")[0];
         var card = jQuery.data(option, 'card');
 
-        deck.addCard(card);
+        deck.addCard(card, $("div.creatures"));
 
         alignImages();
         return false;
@@ -125,6 +148,20 @@
         trash.addEventListener('drop', handleDrop, false);
         $("#addone").click(function() { return addOne(deck); });
         $("#addfour").click(function() { return addFour(deck); });
+
+        var cols = document.querySelectorAll("div.deck > div.boardlist > div");
+        [].forEach.call(cols, function(col) {
+          col.addEventListener('dragover', handleDragOver, false);
+          col.addEventListener('drop', function(e) {
+            if (e.stopPropagation) {
+              e.stopPropagation(); // stops the browser from redirecting.
+            }
+            var card = jQuery.data(dragSrcEl, "card");
+            deck.addCard(card, $(e.target));
+            alignImages();
+            return false;
+          }, false);
+        });
         $.getJSON("allsets.json", function(data) {
           var cards = data['BNG'].cards;
 
@@ -135,12 +172,22 @@
             card.imgUrl = "http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + card.multiverseid + "&type=card";
             selectList.append(option);
             option.innerHTML = card.name;
-            jQuery.data(option, 'card', card);
+            jQuery.data(option, "card", card);
           });
           $("#cardlist").change(function(data) {
             var option = $("option:selected", this);
-            var card = jQuery.data(option[0], 'card');
-            document.getElementById('preview').src = card.imgUrl;
+            var card = jQuery.data(option[0], "card");
+            var img = document.getElementById('preview')
+            jQuery.data(img, "card", card);
+            img.src = card.imgUrl;
+            img.addEventListener("dragstart", function(e) {
+              this.style.opacity = "0.4";
+              dragSrcEl = this;
+              e.dataTransfer.effectAllowed = "move";
+            }, false);
+            img.addEventListener("dragend", function(e) {
+              this.style.opacity = "1.0";
+            }, false);
           });
         });
       });
