@@ -129,7 +129,6 @@
         var option = $("#cardlist option:selected")[0];
         var card = jQuery.data(option, 'card');
 
-        console.log(card.types);
         var types = [
           ["Planeswalker", "div.planeswalkers"],
           ["Creature",     "div.creatures"],
@@ -179,7 +178,13 @@
         });
 
         $.getJSON("allsets.json", function(data) {
-          var cards = data['BNG'].cards;
+          var cards = ["BNG", "THS", "M14", "DGM", "GTC", "RTR"].reduce(function(prev, curr) {
+            return prev.concat(data[curr].cards);
+          }, []).sort(function(a,b) {
+            if (a.name > b.name) return 1;
+            if (a.name < b.name) return -1;
+            return 0;
+          });
 
           var selectList = $('#cardlist');
           var options = cards.map(function(card) {
@@ -194,7 +199,6 @@
           options.forEach(function(option) { selectList.append(option); });
 
           $("form input[name='filter']").change(function () {
-            console.log(options[0].text.toLowerCase());
             var txt = options[0].text.toLowerCase();
             var val = this.value;
             var found = options;
