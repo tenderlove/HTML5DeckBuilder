@@ -38,9 +38,25 @@
       }
     </style>
     <script>
+      function Deck(cards) {
+        this.cards = cards;
+      }
+
+      Deck.prototype.addCard = function(card) {
+        var div = document.createElement('div');
+        div.className = "card";
+        var img = document.createElement('img');
+        img.src = card.imgUrl;
+        img.setAttribute("draggable", true);
+        img.addEventListener('dragstart', handleDragStart, false);
+        img.addEventListener('dragend', handleDragEnd, false);
+        $(div).append(img);
+        $("div.creatures").append(div);
+      }
+
       function alignImages() {
         var maxidx = 0;
-        var arr = Array.prototype.slice.call($(".board .boardlist")[0].children);
+        var arr = Array.prototype.slice.call($(".deck .boardlist")[0].children);
         arr.forEach(function (div) {
           var arr2 = Array.prototype.slice.call(div.children);
           arr2.forEach(function (img, idx) {
@@ -55,27 +71,60 @@
         var height = maxidx * 25 + 180;
         $("div.boardlist").css({"height": height + "px"});
       }
-      function addOne() {
+      var dragSrcEl = null;
+      function handleDragStart(e) {
+        console.log("hi");
+        this.style.opacity = '0.4';
+      
+        dragSrcEl = this;
+      
+        e.dataTransfer.effectAllowed = 'move';
+      }
+
+      function handleDrop(e) {
+        if (e.stopPropagation) {
+          e.stopPropagation(); // stops the browser from redirecting.
+        }
+        console.log("dropped");
+        console.log(e.target);
+        console.log(this);
+        console.log(dragSrcEl);
+        var div = dragSrcEl.parentNode;
+        div.parentNode.removeChild(div);
+        alignImages();
+        return false;
+      }
+
+      function handleDragOver(e) {
+        if (e.preventDefault) { e.preventDefault(); }
+        return false;
+      }
+
+      function handleDragEnd(e) { this.style.opacity = '1.0'; }
+
+      function addOne(deck) {
         var option = $("#cardlist option:selected")[0];
         var card = jQuery.data(option, 'card');
 
-        var div = document.createElement('div');
-        div.className = "card";
-        var img = document.createElement('img');
-        img.src = card.imgUrl;
-        $(div).append(img);
-        $("div.creatures").append(div);
+        deck.addCard(card);
+
         alignImages();
         return false;
       }
-      function addFour() {
-        for(var i = 0; i < 4; i++) { addOne(); }
+
+      function addFour(deck) {
+        for(var i = 0; i < 4; i++) { addOne(deck); }
         return false;
       }
+
       $(document).ready(function() {
+        var deck = new Deck([]);
         alignImages();
-        $("#addone").click(addOne);
-        $("#addfour").click(addFour);
+        var trash = document.querySelector('div.trash');
+        trash.addEventListener('dragover', handleDragOver, false);
+        trash.addEventListener('drop', handleDrop, false);
+        $("#addone").click(function() { return addOne(deck); });
+        $("#addfour").click(function() { return addFour(deck); });
         $.getJSON("allsets.json", function(data) {
           var cards = data['BNG'].cards;
 
@@ -115,7 +164,7 @@
             <button id="addfour">Add Four</button>
           </form>
         </div>
-        <div class="col-md-9 board">
+        <div class="col-md-9 deck">
           <div class="row card-headers">
             <div class="col-md-2">Creatures</div>
             <div class="col-md-2">Spells</div>
@@ -181,6 +230,9 @@
                 <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378375&type=card" />
               </div>
             </div>
+          </div>
+          <div class="row trash">
+            Trash
           </div>
         </div>
       </div>
