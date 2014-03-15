@@ -156,7 +156,6 @@
         }, false);
         $("#addone").click(function() { return addOne(deck); });
         $("#addfour").click(function() { return addFour(deck); });
-
         var cols = document.querySelectorAll("div.deck > div.boardlist > div");
 
         // Drop cards in particular columns
@@ -174,14 +173,38 @@
           var cards = data['BNG'].cards;
 
           var selectList = $('#cardlist');
-          cards.forEach(function(card) {
+          var options = cards.map(function(card) {
             var option = document.createElement('option');
             option.value = card.multiverseid;
             card.imgUrl = "http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + card.multiverseid + "&type=card";
-            selectList.append(option);
             option.innerHTML = card.name;
             jQuery.data(option, "card", card);
+            return option;
           });
+
+          options.forEach(function(option) { selectList.append(option); });
+
+          $("form input[name='filter']").change(function () {
+            console.log(options[0].text.toLowerCase());
+            var txt = options[0].text.toLowerCase();
+            var val = this.value;
+            var found = options;
+            
+            if (val != "") {
+              found = options.filter(function(option) {
+                var txt = option.text.toLowerCase();
+                var idx = txt.indexOf(val);
+                return(idx > -1);
+              });
+            }
+
+            var node = document.getElementById("cardlist");
+            while (node.firstChild) {
+              node.removeChild(node.firstChild);
+            }
+            found.forEach(function(option) { node.appendChild(option); });
+          }).keyup( function () { $(this).change(); });
+
           $("#cardlist").change(function(data) {
             var option = $("option:selected", this);
             var card = jQuery.data(option[0], "card");
@@ -212,7 +235,7 @@
         <div class="col-md-3">
           <img id="preview" src="images/back.jpg" />
           <form>
-            <input type="text" />
+            <input type="text" name="filter" />
             <select id="cardlist" size="10">
             </select>
             <button id="addone">Add One</button>
