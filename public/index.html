@@ -50,9 +50,7 @@
 
       Deck.prototype.handleDragStart = function(e) {
         this.style.opacity = '0.4';
-      
         dragSrcEl = this;
-      
         e.dataTransfer.effectAllowed = 'move';
       }
 
@@ -61,7 +59,6 @@
         if (e.preventDefault) { e.preventDefault(); }
         return false;
       };
-
 
       Deck.prototype.addCard = function(card, loc) {
         var div = document.createElement('div');
@@ -75,10 +72,7 @@
         img.addEventListener('dragend', this.handleDragEnd, false);
         img.addEventListener('dragover', this.handleDragOver, false);
         img.addEventListener('drop', function(e) {
-          if (e.stopPropagation) {
-            e.stopPropagation(); // stops the browser from redirecting.
-          }
-          console.log("dropped on image");
+          if (e.stopPropagation) { e.stopPropagation(); }
           var card = jQuery.data(dragSrcEl, "card");
           var column = e.target.parentNode.parentNode;
           deck.addCard(card, $(column));
@@ -87,6 +81,13 @@
         }, false);
         $(div).append(img);
         loc.append(div);
+        alignImages();
+      }
+
+      Deck.prototype.removeCard = function(img) {
+        var div = img.parentNode;
+        div.parentNode.removeChild(div);
+        alignImages();
       }
 
       function alignImages() {
@@ -110,16 +111,6 @@
         $("div.boardlist").css({"height": height + "px"});
       }
 
-      function handleDrop(e) {
-        if (e.stopPropagation) {
-          e.stopPropagation(); // stops the browser from redirecting.
-        }
-        var div = dragSrcEl.parentNode;
-        div.parentNode.removeChild(div);
-        alignImages();
-        return false;
-      }
-
       function handleDragOver(e) {
         if (e.preventDefault) { e.preventDefault(); }
         return false;
@@ -129,9 +120,23 @@
         var option = $("#cardlist option:selected")[0];
         var card = jQuery.data(option, 'card');
 
-        deck.addCard(card, $("div.creatures"));
+        console.log(card.types);
+        var types = [
+          ["Planeswalker", "div.planeswalkers"],
+          ["Creature",     "div.creatures"],
+          ["Artifact",     "div.artifacts"],
+          ["Enchantment",  "div.enchantments"],
+          ["Land",         "div.lands"],
+        ]
 
-        alignImages();
+        for(var i = 0; i < types.length; i++) {
+          if (card.types.indexOf(types[i][0]) >= 0) {
+            deck.addCard(card, $(types[i][1]));
+            return false;
+          }
+        }
+
+        deck.addCard(card, $("div.spells"));
         return false;
       }
 
@@ -142,26 +147,29 @@
 
       $(document).ready(function() {
         var deck = new Deck([]);
-        alignImages();
         var trash = document.querySelector('div.trash');
         trash.addEventListener('dragover', handleDragOver, false);
-        trash.addEventListener('drop', handleDrop, false);
+        trash.addEventListener('drop', function (e) {
+          if (e.stopPropagation) { e.stopPropagation(); }
+          deck.removeCard(dragSrcEl);
+          return false;
+        }, false);
         $("#addone").click(function() { return addOne(deck); });
         $("#addfour").click(function() { return addFour(deck); });
 
         var cols = document.querySelectorAll("div.deck > div.boardlist > div");
+
+        // Drop cards in particular columns
         [].forEach.call(cols, function(col) {
           col.addEventListener('dragover', handleDragOver, false);
           col.addEventListener('drop', function(e) {
-            if (e.stopPropagation) {
-              e.stopPropagation(); // stops the browser from redirecting.
-            }
+            if (e.stopPropagation) { e.stopPropagation(); }
             var card = jQuery.data(dragSrcEl, "card");
             deck.addCard(card, $(e.target));
-            alignImages();
             return false;
           }, false);
         });
+
         $.getJSON("allsets.json", function(data) {
           var cards = data['BNG'].cards;
 
@@ -218,64 +226,31 @@
             <div class="col-md-2">Artifacts</div>
             <div class="col-md-2">Enchantments</div>
             <div class="col-md-2">Lands</div>
-            <div class="col-md-2">Plainswalkers</div>
+            <div class="col-md-2">Planeswalkers</div>
           </div>
           <div class="row boardlist">
             <!-- creatures -->
             <div class="col-md-2 creatures">
-              <div class="card card-1">
-                <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378375&type=card" />
-              </div>
             </div>
 
             <!-- spells -->
-            <div class="col-md-2">
-              <div class="card card-1">
-                <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378375&type=card" />
-              </div>
-              <div class="card card-2">
-                <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378375&type=card" />
-              </div>
+            <div class="col-md-2 spells">
             </div>
 
             <!-- artifacts -->
-            <div class="col-md-2">
-              <div class="card card-1">
-                <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378375&type=card" />
-              </div>
-              <div class="card card-2">
-                <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378375&type=card" />
-              </div>
+            <div class="col-md-2 artifacts">
             </div>
 
             <!-- enchantments -->
-            <div class="col-md-2">
-              <div class="card card-1">
-                <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378375&type=card" />
-              </div>
-              <div class="card card-2">
-                <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378375&type=card" />
-              </div>
+            <div class="col-md-2 enchantments">
             </div>
 
             <!-- lands -->
-            <div class="col-md-2">
-              <div class="card card-1">
-                <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378375&type=card" />
-              </div>
-              <div class="card card-2">
-                <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378375&type=card" />
-              </div>
+            <div class="col-md-2 lands">
             </div>
 
             <!-- plainswalkers -->
-            <div class="col-md-2">
-              <div class="card card-1">
-                <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378375&type=card" />
-              </div>
-              <div class="card card-2">
-                <img src="http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=378375&type=card" />
-              </div>
+            <div class="col-md-2 planeswalkers">
             </div>
           </div>
           <div class="row trash">
