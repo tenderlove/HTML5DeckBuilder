@@ -10,6 +10,11 @@ form input, form select {
 div {
   border: black 1px solid;
 }
+
+div.boardlist {
+  height: 500px;
+}
+
 div.cardlist {
   height: 200px;
   overflow-y: scroll;

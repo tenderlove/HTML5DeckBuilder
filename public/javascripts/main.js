@@ -8,7 +8,10 @@ Deck.prototype.handleDragStart = function(e) {
   e.dataTransfer.effectAllowed = 'move';
 }
 
-Deck.prototype.handleDragEnd = function(e) { this.style.opacity = '1.0'; };
+Deck.prototype.handleDragEnd = function(e) {
+  this.style.opacity = '1.0';
+};
+
 Deck.prototype.handleDragOver = function(e) {
   if (e.preventDefault) { e.preventDefault(); }
   return false;
@@ -22,6 +25,7 @@ Deck.prototype.addCard = function(card, loc) {
   div.className = "card";
   img.src = card.imgUrl;
   img.setAttribute("draggable", true);
+  jQuery.data(img, "card", card);
   img.addEventListener('dragstart', this.handleDragStart, false);
   img.addEventListener('dragend', this.handleDragEnd, false);
   img.addEventListener('dragover', this.handleDragOver, false);
@@ -29,6 +33,9 @@ Deck.prototype.addCard = function(card, loc) {
     if (e.stopPropagation) { e.stopPropagation(); }
     var card = jQuery.data(dragSrcEl, "card");
     var column = e.target.parentNode.parentNode;
+    if(deck.isMember(dragSrcEl)) {
+      deck.removeCard(dragSrcEl);
+    }
     deck.addCard(card, $(column));
     alignImages();
     return false;
@@ -36,6 +43,10 @@ Deck.prototype.addCard = function(card, loc) {
   $(div).append(img);
   loc.append(div);
   alignImages();
+}
+
+Deck.prototype.isMember = function(img) {
+  return $(img).parents("div.deck")[0];
 }
 
 Deck.prototype.removeCard = function(img) {
@@ -117,6 +128,9 @@ $(document).ready(function() {
     col.addEventListener('drop', function(e) {
       if (e.stopPropagation) { e.stopPropagation(); }
       var card = jQuery.data(dragSrcEl, "card");
+      if (deck.isMember(dragSrcEl)) {
+        deck.removeCard(dragSrcEl);
+      }
       deck.addCard(card, $(e.target));
       return false;
     }, false);
