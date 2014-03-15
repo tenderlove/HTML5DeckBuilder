@@ -13,6 +13,15 @@
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
 
     <style>
+      form {
+        padding-top: 10px;
+      }
+      div.selection {
+        text-align: center;
+      }
+      form input, form select {
+        width: 100%;
+      }
       div {
         border: black 1px solid;
       }
@@ -231,15 +240,21 @@
           header
         </div>
       </div>
-      <div class="row">
+      <div class="row selection">
         <div class="col-md-3">
           <img id="preview" src="images/back.jpg" />
           <form>
-            <input type="text" name="filter" />
-            <select id="cardlist" size="10">
-            </select>
-            <button id="addone">Add One</button>
-            <button id="addfour">Add Four</button>
+            <div class="filter">
+              <input type="text" name="filter" />
+            </div>
+            <div>
+              <select id="cardlist" size="10">
+              </select>
+            </div>
+            <div class="buttons">
+              <button id="addone">Add One</button>
+              <button id="addfour">Add Four</button>
+            </div>
           </form>
         </div>
         <div class="col-md-9 deck">
