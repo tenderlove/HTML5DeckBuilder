@@ -1,0 +1,36 @@
+form {
+  padding-top: 10px;
+}
+div.selection {
+  text-align: center;
+}
+form input, form select {
+  width: 100%;
+}
+div {
+  border: black 1px solid;
+}
+div.cardlist {
+  height: 200px;
+  overflow-y: scroll;
+}
+
+div.cardlist option:nth-child(even) {
+  background:lightgrey;
+}
+
+div.card-headers {
+  text-align: center;
+}
+
+#preview {
+  width: 223px;
+}
+
+div.card img {
+  width: 120px;
+}
+
+div.boardlist > div {
+  height: 100%;
+}
