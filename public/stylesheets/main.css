@@ -8,8 +8,12 @@ form input, form select {
   width: 100%;
 }
 
-div {
+div.trash, .card-headers div, .boardlist > div {
   border: black 1px solid;
+}
+
+#deck-controls {
+  padding-bottom: 10px;
 }
 
 #stats-view div {
