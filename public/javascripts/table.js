@@ -43,6 +43,14 @@ Table.prototype.clear = function() {
       node.removeChild(node.firstChild);
     }
   });
+  var node = document.getElementById('manacurve');
+  while (node.firstChild) {
+    node.removeChild(node.firstChild);
+  }
+  var node = document.getElementById('colordist');
+  while (node.firstChild) {
+    node.removeChild(node.firstChild);
+  }
 };
 
 Table.prototype.handleDragStart = function(e) {
@@ -73,6 +81,10 @@ Table.prototype.manaDistribution = function() {
   return Object.keys(group).map(Number).sort().map(function(num) {
     return [num, group[num]];
   });
+}
+
+Table.prototype.isEmpty = function() {
+  return this.cards().length == 0;
 }
 
 Table.prototype.colorDistribution = function() {
@@ -125,6 +137,8 @@ Table.prototype.addCardToTarget = function(card, loc) {
   $(div).append(img);
   loc.append(div);
   this.alignImages();
+  drawColorDistribution(this);
+  drawManaCurve(this);
 }
 
 Table.prototype.isMember = function(img) {
@@ -135,6 +149,8 @@ Table.prototype.removeCard = function(img) {
   var div = img.parentNode;
   div.parentNode.removeChild(div);
   this.alignImages();
+  drawManaCurve(this);
+  drawColorDistribution(this);
 }
 
 Table.prototype.alignImages = function() {

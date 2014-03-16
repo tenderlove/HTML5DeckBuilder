@@ -12,10 +12,6 @@ div {
   border: black 1px solid;
 }
 
-#stats-view {
-  display: none;
-}
-
 div.boardlist {
   height: 500px;
 }

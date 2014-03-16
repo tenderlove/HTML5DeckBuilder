@@ -111,6 +111,7 @@ function drawColorDistribution(deck) {
 
   var options = {
     title: 'Card Color Distribution',
+    backgroundColor: '#E4E4E4',
     slices: colorDist.map(function(d) { return { color: d[0] }; }),
     legend: { position: 'bottom' }
   };
@@ -127,6 +128,7 @@ function drawManaCurve(deck) {
   var options = {
     title: 'Mana Curve',
     curveType: 'function',
+    backgroundColor: '#E4E4E4',
     legend: { position: 'bottom' }
   };
 
@@ -158,8 +160,6 @@ $(document).ready(function() {
   $("#stats").click(function() {
     $("#stats-view").toggle();
     $("#table-view").toggle();
-    drawManaCurve(deck);
-    drawColorDistribution(deck);
     return false;
   });
 
