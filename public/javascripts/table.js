@@ -75,6 +75,23 @@ Table.prototype.manaDistribution = function() {
   });
 }
 
+Table.prototype.colorDistribution = function() {
+  var group = {};
+  this.cards().forEach(function(card) {
+    if(card.colors) {
+      if(card.colors.length > 1) {
+        group['Gold'] = (group['Gold'] || 0) + 1;
+      } else {
+        var color = card.colors[0];
+        group[color] = (group[color] || 0) + 1;
+      }
+    }
+  });
+  return Object.keys(group).map(function(key) {
+    return [key, group[key]];
+  });
+}
+
 Table.prototype.cards = function() {
   var deck = this;
   return this.rowTypes.reduce(function(prev, curr) {

@@ -103,7 +103,23 @@ function loadDeck(storage, name, table, mvidToCards) {
   }
 }
 
-function drawChart(deck) {
+function drawColorDistribution(deck) {
+  var colorDist = deck.colorDistribution();
+  var data = google.visualization.arrayToDataTable(
+      [['Color', 'Number of Cards']].concat(colorDist)
+      );
+
+  var options = {
+    title: 'Card Color Distribution',
+    slices: colorDist.map(function(d) { return { color: d[0] }; }),
+    legend: { position: 'bottom' }
+  };
+
+  var chart = new google.visualization.PieChart(document.getElementById('colordist'));
+  chart.draw(data, options);
+}
+
+function drawManaCurve(deck) {
   var data = google.visualization.arrayToDataTable(
       [['Mana', 'Converted Mana Cost']].concat(deck.manaDistribution())
   );
@@ -114,7 +130,7 @@ function drawChart(deck) {
     legend: { position: 'bottom' }
   };
 
-  var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+  var chart = new google.visualization.LineChart(document.getElementById('manacurve'));
   chart.draw(data, options);
 }
 
@@ -142,7 +158,8 @@ $(document).ready(function() {
   $("#stats").click(function() {
     $("#stats-view").toggle();
     $("#table-view").toggle();
-    drawChart(deck);
+    drawManaCurve(deck);
+    drawColorDistribution(deck);
     return false;
   });
 
