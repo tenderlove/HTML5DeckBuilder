@@ -1,5 +1,21 @@
 function Table(root) {
   this.root = root;
+  var cols = root.querySelectorAll("div.boardlist > div");
+  var table = this;
+
+  // Drop cards in particular columns
+  [].forEach.call(cols, function(col) {
+    col.addEventListener('dragover', handleDragOver, false);
+    col.addEventListener('drop', function(e) {
+      if (e.stopPropagation) { e.stopPropagation(); }
+      var card = jQuery.data(dragSrcEl, "card");
+      if (table.isMember(dragSrcEl)) {
+        table.removeCard(dragSrcEl);
+      }
+      table.addCard(card, $(e.target));
+      return false;
+    }, false);
+  });
 }
 
 Table.prototype.rowTypes =

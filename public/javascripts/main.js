@@ -163,23 +163,7 @@ $(document).ready(function() {
     return false;
   });
 
-  var cols = document.querySelectorAll("div.deck > div.boardlist > div");
-
   addDeckList(storage.read(), $("#deck-controls"));
-
-  // Drop cards in particular columns
-  [].forEach.call(cols, function(col) {
-    col.addEventListener('dragover', handleDragOver, false);
-    col.addEventListener('drop', function(e) {
-      if (e.stopPropagation) { e.stopPropagation(); }
-      var card = jQuery.data(dragSrcEl, "card");
-      if (deck.isMember(dragSrcEl)) {
-        deck.removeCard(dragSrcEl);
-      }
-      deck.addCard(card, $(e.target));
-      return false;
-    }, false);
-  });
 
   $.getJSON("allsets.json", function(data) {
     var cards = ["BNG", "THS", "M14", "DGM", "GTC", "RTR"].reduce(function(prev, curr) {
