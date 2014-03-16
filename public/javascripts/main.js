@@ -172,13 +172,10 @@ function saveDeck(storage, deck, name) {
 
   if (existingDeck) { storedDeck = existingDeck }
 
-  storedDeck.name          = name;
-  storedDeck.creatures     = deck.creatures().map(mvidfun);
-  storedDeck.spells        = deck.spells().map(mvidfun);
-  storedDeck.artifacts     = deck.artifacts().map(mvidfun);
-  storedDeck.enchantments  = deck.enchantments().map(mvidfun);
-  storedDeck.lands         = deck.lands().map(mvidfun);
-  storedDeck.planeswalkers = deck.planeswalkers().map(mvidfun);
+  storedDeck.name = name;
+  deck.rowTypes.forEach(function(type) {
+    storedDeck[type] = deck[type]().map(mvidfun);
+  });
 
   console.log(storedDeck);
   console.log(storage);
@@ -249,6 +246,8 @@ $(document).ready(function() {
 
     console.log(deckName);
     saveDeck(allDecks, deck, deckName);
+    $("select", form).val(deckName);
+    $("input", form).val('');
     return false;
   });
 
