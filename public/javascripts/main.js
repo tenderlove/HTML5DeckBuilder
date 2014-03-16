@@ -125,6 +125,14 @@ function drawColorDistribution(deck) {
 
 function drawSymbolDistribution(deck) {
   var colorDist = deck.symbolDistribution();
+  var colors = {
+    'R': 'Red',
+    'U': 'Blue',
+    'B': 'Black',
+    'W': 'White',
+    'G': 'Green'
+  };
+
   var data = google.visualization.arrayToDataTable(
       [['Symbol', 'Number of Cards']].concat(colorDist)
       );
@@ -132,7 +140,7 @@ function drawSymbolDistribution(deck) {
   var options = {
     title: 'Card Symbol Distribution',
     backgroundColor: '#E4E4E4',
-    slices: colorDist.map(function(d) { return { color: d[0] }; }),
+    slices: colorDist.map(function(d) { return { color: colors[d[0]] }; }),
     legend: { position: 'bottom' }
   };
 

@@ -97,14 +97,6 @@ Table.prototype.isEmpty = function() {
 
 Table.prototype.symbolDistribution = function() {
   var group = {};
-  var colors = {
-    'R': 'Red',
-    'U': 'Blue',
-    'B': 'Black',
-    'W': 'White',
-    'G': 'Green'
-  };
-
   this.cards().forEach(function(card) {
     if(card.manaCost) {
       var symbols = card.manaCost.match(/{([^}]*)}/g).map(function(t) {
@@ -117,7 +109,7 @@ Table.prototype.symbolDistribution = function() {
     }
   });
   return Object.keys(group).map(function(key) {
-    return [colors[key], group[key]];
+    return [key, group[key]];
   });
 }
 
