@@ -12,6 +12,10 @@ div {
   border: black 1px solid;
 }
 
+#stats-view div {
+  display: inline-block;
+}
+
 div.boardlist {
   height: 500px;
 }
