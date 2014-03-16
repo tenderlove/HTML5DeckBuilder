@@ -108,14 +108,20 @@ function loadDeck(storage, name, table, mvidToCards) {
 
 function drawColorDistribution(deck) {
   var colorDist = deck.colorDistribution();
+  var colors = {
+    'Red': 'Red',
+    'Blue': 'Blue',
+    'Black': 'Black',
+    'White': 'Purple',
+    'Green': 'Green'
+  };
   var data = google.visualization.arrayToDataTable(
       [['Color', 'Number of Cards']].concat(colorDist)
       );
 
   var options = {
     title: 'Card Color Distribution',
-    backgroundColor: '#E4E4E4',
-    slices: colorDist.map(function(d) { return { color: d[0] }; }),
+    slices: colorDist.map(function(d) { return { color: colors[d[0]] }; }),
     legend: { position: 'bottom' }
   };
 
@@ -124,27 +130,42 @@ function drawColorDistribution(deck) {
 }
 
 function drawSymbolDistribution(deck) {
-  var colorDist = deck.symbolDistribution();
+  var symbolDist = deck.symbolDistribution();
   var colors = {
     'R': 'Red',
     'U': 'Blue',
     'B': 'Black',
-    'W': 'White',
+    'W': 'Purple',
     'G': 'Green'
   };
 
   var data = google.visualization.arrayToDataTable(
-      [['Symbol', 'Number of Cards']].concat(colorDist)
+      [['Symbol', 'Number of Cards']].concat(symbolDist)
       );
 
   var options = {
     title: 'Card Symbol Distribution',
-    backgroundColor: '#E4E4E4',
-    slices: colorDist.map(function(d) { return { color: colors[d[0]] }; }),
+    slices: symbolDist.map(function(d) { return { color: colors[d[0]] }; }),
     legend: { position: 'bottom' }
   };
 
   var chart = new google.visualization.PieChart(document.getElementById('symboldist'));
+  chart.draw(data, options);
+}
+
+function drawCardTypeDistribution(deck) {
+  var colorDist = deck.cardTypeDistribution();
+
+  var data = google.visualization.arrayToDataTable(
+      [['Type', 'Number of Cards']].concat(colorDist)
+      );
+
+  var options = {
+    title: 'Card Type Distribution',
+    legend: { position: 'bottom' }
+  };
+
+  var chart = new google.visualization.PieChart(document.getElementById('cardtypedist'));
   chart.draw(data, options);
 }
 
@@ -156,7 +177,6 @@ function drawManaCurve(deck) {
   var options = {
     title: 'Mana Curve',
     curveType: 'function',
-    backgroundColor: '#E4E4E4',
     legend: { position: 'bottom' }
   };
 

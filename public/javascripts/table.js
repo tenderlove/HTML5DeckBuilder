@@ -108,9 +108,7 @@ Table.prototype.symbolDistribution = function() {
       });
     }
   });
-  return Object.keys(group).map(function(key) {
-    return [key, group[key]];
-  });
+  return Object.keys(group).map(function(key) { return [key, group[key]]; });
 }
 
 Table.prototype.colorDistribution = function() {
@@ -125,9 +123,19 @@ Table.prototype.colorDistribution = function() {
       }
     }
   });
-  return Object.keys(group).map(function(key) {
-    return [key, group[key]];
+  return Object.keys(group).map(function(key) { return [key, group[key]]; });
+}
+
+Table.prototype.cardTypeDistribution = function() {
+  var group = {};
+  this.cards().forEach(function(card) {
+    if(card.types) {
+      card.types.forEach(function(type) {
+        group[type] = (group[type] || 0) + 1;
+      });
+    }
   });
+  return Object.keys(group).map(function(key) { return [key, group[key]]; });
 }
 
 Table.prototype.cards = function() {
@@ -184,6 +192,7 @@ Table.prototype.drawCharts = function() {
     drawManaCurve(this);
     drawColorDistribution(this);
     drawSymbolDistribution(this);
+    drawCardTypeDistribution(this);
   }
 }
 
