@@ -11,21 +11,21 @@ function addOne(deck) {
   var card = jQuery.data(option, 'card');
 
   var types = [
-    ["Planeswalker", "div.planeswalkers"],
-    ["Creature",     "div.creatures"],
-    ["Artifact",     "div.artifacts"],
-    ["Enchantment",  "div.enchantments"],
-    ["Land",         "div.lands"],
+    ["Planeswalker", "planeswalkers"],
+    ["Creature",     "creatures"],
+    ["Artifact",     "artifacts"],
+    ["Enchantment",  "enchantments"],
+    ["Land",         "lands"],
   ]
 
   for(var i = 0; i < types.length; i++) {
     if (card.types.indexOf(types[i][0]) >= 0) {
-      deck.addCard(card, $(types[i][1]));
+      deck.addCard(card, types[i][1]);
       return false;
     }
   }
 
-  deck.addCard(card, $("div.spells"));
+  deck.addCard(card, "spells");
   return false;
 }
 
@@ -33,7 +33,6 @@ function addFour(deck) {
   for(var i = 0; i < 4; i++) { addOne(deck); }
   return false;
 }
-
 
 function Storage() { }
 Storage.prototype.read = function() {
@@ -97,18 +96,9 @@ function loadDeck(storage, name, table, mvidToCards) {
     return storedDeck.name == name;
   })[0];
 
-  var tableSections = {
-    creatures: $("div.creatures"),
-    spells: $("div.spells"),
-    artifacts: $("div.artifacts"),
-    enchantments: $("div.enchantments"),
-    lands: $("div.lands"),
-    planeswalkers: $("div.planeswalkers"),
-  }
-
-  for (var section in tableSections) {
+  for (var section in table.cardColumns) {
     (deck[section] || []).forEach(function(mvid) {
-      table.addCard(mvidToCards[mvid], tableSections[section]);
+      table.addCard(mvidToCards[mvid], section);
     });
   }
 }

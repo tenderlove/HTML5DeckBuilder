@@ -12,10 +12,17 @@ function Table(root) {
       if (table.isMember(dragSrcEl)) {
         table.removeCard(dragSrcEl);
       }
-      table.addCard(card, $(e.target));
+      table.addCardToTarget(card, $(e.target));
       return false;
     }, false);
   });
+
+  var cardColumns = {};
+  
+  this.rowTypes.forEach(function(type) {
+    cardColumns[type] = $("div." + type);
+  });
+  this.cardColumns = cardColumns;
 }
 
 Table.prototype.rowTypes =
@@ -54,6 +61,11 @@ Table.prototype.handleDragOver = function(e) {
 };
 
 Table.prototype.addCard = function(card, loc) {
+  var thing = this.cardColumns[loc];
+  return this.addCardToTarget(card, thing);
+};
+
+Table.prototype.addCardToTarget = function(card, loc) {
   var div = document.createElement('div');
   var img = document.createElement('img');
   var deck = this;
@@ -72,7 +84,7 @@ Table.prototype.addCard = function(card, loc) {
     if(deck.isMember(dragSrcEl)) {
       deck.removeCard(dragSrcEl);
     }
-    deck.addCard(card, $(column));
+    deck.addCardToTarget(card, $(column));
     deck.alignImages();
     return false;
   }, false);
