@@ -21,7 +21,7 @@ Angular, mainly because I don't know how to use them.
 ## Contributing
 
 * *Do not* file bugs (I know it has bugs, I will fix the ones that bother me)
-* *Do* file pull requests
+* *Do* file pull requests (I appreciate contributions)
 * Only use stdlib Ruby
 * *Do not* add a `Gemfile`, `travis.yml`, etc
 
