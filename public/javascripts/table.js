@@ -12,7 +12,7 @@ function Table(root) {
       if (table.isMember(dragSrcEl)) {
         table.removeCard(dragSrcEl);
       }
-      table.addCardToTarget(card, $(e.target));
+      table.addCard(card, e.target.getAttribute('data-type'));
       return false;
     }, false);
   });
@@ -43,14 +43,7 @@ Table.prototype.clear = function() {
       node.removeChild(node.firstChild);
     }
   });
-  var node = document.getElementById('manacurve');
-  while (node.firstChild) {
-    node.removeChild(node.firstChild);
-  }
-  var node = document.getElementById('colordist');
-  while (node.firstChild) {
-    node.removeChild(node.firstChild);
-  }
+  this.clearCharts();
 };
 
 Table.prototype.handleDragStart = function(e) {
@@ -68,9 +61,24 @@ Table.prototype.handleDragOver = function(e) {
   return false;
 };
 
+Table.prototype.setDeck = function(deck) {
+  var thing = this;
+  for (var section in this.cardColumns) {
+    var column = this.cardColumns[section];
+
+    deck[section].forEach(function(card) {
+      thing.addCardToTarget(card, column);
+    });
+  }
+  this.alignImages();
+  this.drawCharts();
+};
+
 Table.prototype.addCard = function(card, loc) {
   var thing = this.cardColumns[loc];
-  return this.addCardToTarget(card, thing);
+  this.addCardToTarget(card, thing);
+  this.alignImages();
+  this.drawCharts();
 };
 
 Table.prototype.manaDistribution = function() {
@@ -85,6 +93,32 @@ Table.prototype.manaDistribution = function() {
 
 Table.prototype.isEmpty = function() {
   return this.cards().length == 0;
+}
+
+Table.prototype.symbolDistribution = function() {
+  var group = {};
+  var colors = {
+    'R': 'Red',
+    'U': 'Blue',
+    'B': 'Black',
+    'W': 'White',
+    'G': 'Green'
+  };
+
+  this.cards().forEach(function(card) {
+    if(card.manaCost) {
+      var symbols = card.manaCost.match(/{([^}]*)}/g).map(function(t) {
+        return /{([^}]*)}/.exec(t)[1];
+      }).filter(function (t) { return /^[RBUGW]$/.exec(t); })
+
+      symbols.forEach(function (sym) {
+        group[sym] = (group[sym] || 0) + 1;
+      });
+    }
+  });
+  return Object.keys(group).map(function(key) {
+    return [colors[key], group[key]];
+  });
 }
 
 Table.prototype.colorDistribution = function() {
@@ -130,27 +164,42 @@ Table.prototype.addCardToTarget = function(card, loc) {
     if(deck.isMember(dragSrcEl)) {
       deck.removeCard(dragSrcEl);
     }
-    deck.addCardToTarget(card, $(column));
+    deck.addCard(card, column.getAttribute('data-type'));
     deck.alignImages();
     return false;
   }, false);
   $(div).append(img);
   loc.append(div);
-  this.alignImages();
-  drawColorDistribution(this);
-  drawManaCurve(this);
 }
 
 Table.prototype.isMember = function(img) {
   return $(img).parents("div.deck")[0];
 }
 
+Table.prototype.clearCharts = function() {
+  ['manacurve', 'colordist'].forEach(function(type) {
+    var node = document.getElementById(type);
+    while (node.firstChild) {
+      node.removeChild(node.firstChild);
+    }
+  });
+};
+
+Table.prototype.drawCharts = function() {
+  if (this.cards().length == 0) {
+    this.clearCharts();
+  } else {
+    drawManaCurve(this);
+    drawColorDistribution(this);
+    drawSymbolDistribution(this);
+  }
+}
+
 Table.prototype.removeCard = function(img) {
   var div = img.parentNode;
   div.parentNode.removeChild(div);
   this.alignImages();
-  drawManaCurve(this);
-  drawColorDistribution(this);
+  this.drawCharts();
 }
 
 Table.prototype.alignImages = function() {

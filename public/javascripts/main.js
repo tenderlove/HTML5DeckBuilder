@@ -96,11 +96,14 @@ function loadDeck(storage, name, table, mvidToCards) {
     return storedDeck.name == name;
   })[0];
 
+  var resolved = {};
+
   for (var section in table.cardColumns) {
-    (deck[section] || []).forEach(function(mvid) {
-      table.addCard(mvidToCards[mvid], section);
+    resolved[section] = (deck[section] || []).map(function(mvid) {
+      return mvidToCards[mvid];
     });
   }
+  table.setDeck(resolved)
 }
 
 function drawColorDistribution(deck) {
@@ -117,6 +120,23 @@ function drawColorDistribution(deck) {
   };
 
   var chart = new google.visualization.PieChart(document.getElementById('colordist'));
+  chart.draw(data, options);
+}
+
+function drawSymbolDistribution(deck) {
+  var colorDist = deck.symbolDistribution();
+  var data = google.visualization.arrayToDataTable(
+      [['Symbol', 'Number of Cards']].concat(colorDist)
+      );
+
+  var options = {
+    title: 'Card Symbol Distribution',
+    backgroundColor: '#E4E4E4',
+    slices: colorDist.map(function(d) { return { color: d[0] }; }),
+    legend: { position: 'bottom' }
+  };
+
+  var chart = new google.visualization.PieChart(document.getElementById('symboldist'));
   chart.draw(data, options);
 }
 
