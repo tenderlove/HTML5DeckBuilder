@@ -57,12 +57,12 @@ Table.prototype.addCard = function(card, loc) {
       deck.removeCard(dragSrcEl);
     }
     deck.addCard(card, $(column));
-    alignImages();
+    deck.alignImages();
     return false;
   }, false);
   $(div).append(img);
   loc.append(div);
-  alignImages();
+  this.alignImages();
 }
 
 Table.prototype.isMember = function(img) {
@@ -72,5 +72,26 @@ Table.prototype.isMember = function(img) {
 Table.prototype.removeCard = function(img) {
   var div = img.parentNode;
   div.parentNode.removeChild(div);
-  alignImages();
+  this.alignImages();
+}
+
+Table.prototype.alignImages = function() {
+  var maxidx = 0;
+  var arr = Array.prototype.slice.call($(".deck .boardlist")[0].children);
+  arr.forEach(function (div) {
+    var arr2 = Array.prototype.slice.call(div.children);
+    arr2.forEach(function (img, idx) {
+      if (maxidx < idx) {
+        maxidx = idx;
+      }
+      var pos = (idx * 25) + "px"
+      $(img).css({ "position": "absolute",
+                   "top": pos });
+    });
+  });
+  var height = maxidx * 25 + 180;
+  if (height < 500) {
+    height = 500;
+  }
+  $("div.boardlist").css({"height": height + "px"});
 }

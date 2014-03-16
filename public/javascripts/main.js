@@ -1,25 +1,5 @@
 var dragSrcEl = null;
 
-function alignImages() {
-  var maxidx = 0;
-  var arr = Array.prototype.slice.call($(".deck .boardlist")[0].children);
-  arr.forEach(function (div) {
-    var arr2 = Array.prototype.slice.call(div.children);
-    arr2.forEach(function (img, idx) {
-      if (maxidx < idx) {
-        maxidx = idx;
-      }
-      var pos = (idx * 25) + "px"
-      $(img).css({ "position": "absolute",
-                   "top": pos });
-    });
-  });
-  var height = maxidx * 25 + 180;
-  if (height < 500) {
-    height = 500;
-  }
-  $("div.boardlist").css({"height": height + "px"});
-}
 
 function handleDragOver(e) {
   if (e.preventDefault) { e.preventDefault(); }
@@ -54,13 +34,19 @@ function addFour(deck) {
   return false;
 }
 
-var allDecks = [
-  {
-    'name': 'Deck one',
-    'creatures': [373543, 373543, 373543, 370688],
-    'spells': [369041]
+
+function Storage() { }
+Storage.prototype.read = function() {
+  if (window.localStorage.decks) {
+    return JSON.parse(window.localStorage.decks);
   }
-];
+  return [];
+}
+Storage.prototype.write = function(data) {
+  window.localStorage.decks = JSON.stringify(data);
+}
+
+var storage = new Storage();
 
 var mvidToCards = {};
 
@@ -86,7 +72,8 @@ function addDeckList(savedDecks, form) {
 }
 
 function saveDeck(storage, deck, name) {
-  var existingDeck = storage.filter(function(storedDeck) {
+  var decks = storage.read();
+  var existingDeck = decks.filter(function(storedDeck) {
     return storedDeck.name == name;
   })[0];
 
@@ -100,12 +87,13 @@ function saveDeck(storage, deck, name) {
     storedDeck[type] = deck[type]().map(mvidfun);
   });
 
-  if (!existingDeck) { storage.push(storedDeck); }
-  addDeckList(storage, $("#deck-controls"));
+  if (!existingDeck) { decks.push(storedDeck); }
+  addDeckList(decks, $("#deck-controls"));
+  storage.write(decks);
 }
 
 function loadDeck(storage, name, table, mvidToCards) {
-  var deck = storage.filter(function(storedDeck) {
+  var deck = storage.read().filter(function(storedDeck) {
     return storedDeck.name == name;
   })[0];
 
@@ -125,11 +113,8 @@ function loadDeck(storage, name, table, mvidToCards) {
   }
 }
 
-var table;
-
 $(document).ready(function() {
   var deck = new Table($("div.deck")[0]);
-  table = deck;
   var trash = document.querySelector('div.trash');
   trash.addEventListener('dragover', handleDragOver, false);
   trash.addEventListener('drop', function (e) {
@@ -144,7 +129,7 @@ $(document).ready(function() {
     var deckName = $("select", $(this).parents("form")).val();
     if (deckName != '') {
       deck.clear();
-      loadDeck(allDecks, deckName, deck, mvidToCards);
+      loadDeck(storage, deckName, deck, mvidToCards);
     }
     return false;
   });
@@ -172,7 +157,7 @@ $(document).ready(function() {
       deckName = selectName;
     }
 
-    saveDeck(allDecks, deck, deckName);
+    saveDeck(storage, deck, deckName);
     $("select", form).val(deckName);
     $("input", form).val('');
     return false;
@@ -180,7 +165,7 @@ $(document).ready(function() {
 
   var cols = document.querySelectorAll("div.deck > div.boardlist > div");
 
-  addDeckList(allDecks, $("#deck-controls"));
+  addDeckList(storage.read(), $("#deck-controls"));
 
   // Drop cards in particular columns
   [].forEach.call(cols, function(col) {
