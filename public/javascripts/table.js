@@ -138,6 +138,42 @@ Table.prototype.cardTypeDistribution = function() {
   return Object.keys(group).map(function(key) { return [key, group[key]]; });
 }
 
+Table.prototype.factorial = function(x) {
+  var f = 1;
+  for(var i = 1; i < x; i++) {
+    f = f * i;
+  }
+  return f;
+};
+
+// Binomial Coefficient
+Table.prototype.C = function(n, k) {
+  return this.factorial(n) / (this.factorial(k) * this.factorial(n - k));
+};
+
+Table.prototype.HYPGEOMDIST = function(k, n, K, N) {
+  return this.C(K, k) * this.C(N - K, n - k) / this.C(N, n);
+};
+
+Table.prototype.firstHandProbability = function() {
+  var cards = this.cards();
+
+  if (cards.length < 7) { return []; }
+
+  var group = {};
+  cards.forEach(function(card) {
+    group[card.name] = (group[card.name] || 0) + 1;
+  });
+
+  var deck = this;
+  // get 0, 7 drawn, 4 possible, 60 deck
+  // HYPGEOMDIST(0, 7, 4, 60)
+  return Object.keys(group).map(function(key) {
+    // Calculate the probability of drawing *none*, then subtract from 100%
+    return [key, 1 - deck.HYPGEOMDIST(0, 7, group[key], cards.length)];
+  }).sort(function(a,b) { return a[1] < b[1]; });
+};
+
 Table.prototype.cards = function() {
   var deck = this;
   return this.rowTypes.reduce(function(prev, curr) {
@@ -177,13 +213,21 @@ Table.prototype.isMember = function(img) {
 }
 
 Table.prototype.clearCharts = function() {
-  ['manacurve', 'colordist'].forEach(function(type) {
+  ['manacurve', 'colordist', 'manacurve', 'symboldist'].forEach(function(type) {
     var node = document.getElementById(type);
     while (node.firstChild) {
       node.removeChild(node.firstChild);
     }
   });
+  this.clearProbability();
 };
+
+Table.prototype.clearProbability = function() {
+  var node = document.getElementById('firsthandlist');
+  while (node.firstChild) {
+    node.removeChild(node.firstChild);
+  }
+}
 
 Table.prototype.drawCharts = function() {
   if (this.cards().length == 0) {
@@ -193,6 +237,8 @@ Table.prototype.drawCharts = function() {
     drawColorDistribution(this);
     drawSymbolDistribution(this);
     drawCardTypeDistribution(this);
+    this.clearProbability();
+    drawFirstHandProbability(this);
   }
 }
 

@@ -38,8 +38,9 @@ function Storage() { }
 Storage.prototype.read = function() {
   if (window.localStorage.decks) {
     return JSON.parse(window.localStorage.decks);
+  } else {
+    return JSON.parse('[{"name":"Sample Deck","creatures":[270959,270959,270959,270959,373541,373541,373541,373541,368961,253624,253624,253624,253624,369030,366328,366310,366239,378524],"spells":[373575,373575,373575,373575,370609,370609,373639,373639,373639,373639,373701,366379],"artifacts":[373709,373544,290542],"enchantments":[373715,373715,253507],"lands":[370733,373734,369058,373608,373608,373608,373608,373608,373608,373608,373608,373608,373608,373608,373608,373608,373608,373608,373608,373595,373595,373595,373595,373595,373595,373595,373595],"planeswalkers":[370728]}]');
   }
-  return [];
 }
 Storage.prototype.write = function(data) {
   window.localStorage.decks = JSON.stringify(data);
@@ -169,6 +170,24 @@ function drawCardTypeDistribution(deck) {
   chart.draw(data, options);
 }
 
+function drawFirstHandProbability(deck) {
+  var firstHandProb = deck.firstHandProbability();
+  var table = document.getElementById("firsthandlist");
+
+  firstHandProb.forEach(function(val) {
+    var tr = document.createElement('tr');
+    var tdName = document.createElement('td');
+    var tdProb = document.createElement('td');
+    tdName.innerHTML = val[0];
+    tdName.className = "cardname";
+    tdProb.innerHTML = (val[1] * 100).toFixed(2) + "%";
+    tdProb.className = "probability";
+    tr.appendChild(tdName);
+    tr.appendChild(tdProb);
+    table.appendChild(tr);
+  });
+}
+
 function drawManaCurve(deck) {
   var data = google.visualization.arrayToDataTable(
       [['Mana', 'Converted Mana Cost']].concat(deck.manaDistribution())
@@ -202,12 +221,6 @@ $(document).ready(function() {
       deck.clear();
       loadDeck(storage, deckName, deck, mvidToCards);
     }
-    return false;
-  });
-
-  $("#stats").click(function() {
-    $("#stats-view").toggle();
-    $("#table-view").toggle();
     return false;
   });
 
