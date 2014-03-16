@@ -65,6 +65,23 @@ Table.prototype.addCard = function(card, loc) {
   return this.addCardToTarget(card, thing);
 };
 
+Table.prototype.manaDistribution = function() {
+  var group = {};
+  this.cards().forEach(function(card) {
+    group[card.cmc] = (group[card.cmc] || 0) + 1;
+  });
+  return Object.keys(group).map(Number).sort().map(function(num) {
+    return [num, group[num]];
+  });
+}
+
+Table.prototype.cards = function() {
+  var deck = this;
+  return this.rowTypes.reduce(function(prev, curr) {
+    return prev.concat(deck[curr]());
+  }, []);
+}
+
 Table.prototype.addCardToTarget = function(card, loc) {
   var div = document.createElement('div');
   var img = document.createElement('img');

@@ -103,6 +103,21 @@ function loadDeck(storage, name, table, mvidToCards) {
   }
 }
 
+function drawChart(deck) {
+  var data = google.visualization.arrayToDataTable(
+      [['Mana', 'Converted Mana Cost']].concat(deck.manaDistribution())
+  );
+
+  var options = {
+    title: 'Mana Curve',
+    curveType: 'function',
+    legend: { position: 'bottom' }
+  };
+
+  var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+  chart.draw(data, options);
+}
+
 $(document).ready(function() {
   var deck = new Table($("div.deck")[0]);
   var trash = document.querySelector('div.trash');
@@ -121,6 +136,13 @@ $(document).ready(function() {
       deck.clear();
       loadDeck(storage, deckName, deck, mvidToCards);
     }
+    return false;
+  });
+
+  $("#stats").click(function() {
+    $("#stats-view").toggle();
+    $("#table-view").toggle();
+    drawChart(deck);
     return false;
   });
 

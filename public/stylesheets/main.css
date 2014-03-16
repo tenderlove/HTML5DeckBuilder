@@ -7,8 +7,13 @@ div.selection {
 form input, form select {
   width: 100%;
 }
+
 div {
   border: black 1px solid;
+}
+
+#stats-view {
+  display: none;
 }
 
 div.boardlist {

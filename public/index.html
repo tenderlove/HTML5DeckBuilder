@@ -12,10 +12,16 @@
     <!-- Latest compiled and minified JavaScript -->
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
 
+    <script type="text/javascript" src="//www.google.com/jsapi"></script>
+
     <link rel="stylesheet" href="/stylesheets/main.css">
 
     <script src="/javascripts/table.js"></script>
     <script src="/javascripts/main.js"></script>
+
+    <script>
+      google.load("visualization", "1", {packages:["corechart"]});
+    </script>
   </head>
   <body>
     <div class="container">
@@ -32,6 +38,9 @@
             </div>
             <div class="form-group">
               <input type="text" name="name" placeholder="Save As" />
+            </div>
+            <div class="form-group">
+              <a id="stats" href="#">Stats</a>
             </div>
           </form>
         </div>
@@ -54,41 +63,47 @@
           </form>
         </div>
         <div class="col-md-9 deck">
-          <div class="row card-headers">
-            <div class="col-md-2">Creatures</div>
-            <div class="col-md-2">Spells</div>
-            <div class="col-md-2">Artifacts</div>
-            <div class="col-md-2">Enchantments</div>
-            <div class="col-md-2">Lands</div>
-            <div class="col-md-2">Planeswalkers</div>
+          <div id="stats-view">
+            ZOMG AMAZING
+            <div id="chart_div" style="width: 280px; height: 280px;"></div>
           </div>
-          <div class="row boardlist">
-            <!-- creatures -->
-            <div class="col-md-2 creatures">
+          <div id="table-view">
+            <div class="row card-headers">
+              <div class="col-md-2">Creatures</div>
+              <div class="col-md-2">Spells</div>
+              <div class="col-md-2">Artifacts</div>
+              <div class="col-md-2">Enchantments</div>
+              <div class="col-md-2">Lands</div>
+              <div class="col-md-2">Planeswalkers</div>
             </div>
+            <div class="row boardlist">
+              <!-- creatures -->
+              <div class="col-md-2 creatures">
+              </div>
 
-            <!-- spells -->
-            <div class="col-md-2 spells">
-            </div>
+              <!-- spells -->
+              <div class="col-md-2 spells">
+              </div>
 
-            <!-- artifacts -->
-            <div class="col-md-2 artifacts">
-            </div>
+              <!-- artifacts -->
+              <div class="col-md-2 artifacts">
+              </div>
 
-            <!-- enchantments -->
-            <div class="col-md-2 enchantments">
-            </div>
+              <!-- enchantments -->
+              <div class="col-md-2 enchantments">
+              </div>
 
-            <!-- lands -->
-            <div class="col-md-2 lands">
-            </div>
+              <!-- lands -->
+              <div class="col-md-2 lands">
+              </div>
 
-            <!-- plainswalkers -->
-            <div class="col-md-2 planeswalkers">
+              <!-- plainswalkers -->
+              <div class="col-md-2 planeswalkers">
+              </div>
             </div>
-          </div>
-          <div class="row trash">
-            Trash
+            <div class="row trash">
+              Trash
+            </div>
           </div>
         </div>
       </div>
