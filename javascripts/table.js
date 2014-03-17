@@ -285,7 +285,7 @@ Table.prototype.clearProbability = function() {
 Table.prototype.drawCharts = function() {
   if (this.cards().length == 0) {
     this.clearCharts();
-  } else {
+  } else {    
     drawManaCurve(this);
     drawColorDistribution(this);
     drawSymbolDistribution(this);
@@ -305,21 +305,23 @@ Table.prototype.removeCard = function(img) {
 
 Table.prototype.alignImages = function() {
   var maxidx = 0;
-  var arr = Array.prototype.slice.call($(".deck .boardlist")[0].children);
-  arr.forEach(function (div) {
-    var arr2 = Array.prototype.slice.call(div.children);
-    arr2.forEach(function (img, idx) {
-      if (maxidx < idx) {
-        maxidx = idx;
-      }
-      var pos = (idx * 25) + "px"
-      $(img).css({ "position": "absolute",
+  
+  $(".deck .boardlist > *").each(function(i, e) {
+    $(e).children().each(function(idx, img) {
+        if(idx > maxidx) {
+            maxidx = idx;
+        }
+        
+        var pos = (idx * 25) + "px"
+        $(img).css({ "position": "absolute",
                    "top": pos });
     });
   });
+
   var height = maxidx * 25 + 180;
   if (height < 500) {
     height = 500;
   }
+  
   $("div.boardlist").css({"height": height + "px"});
 }
