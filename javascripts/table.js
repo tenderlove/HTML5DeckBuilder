@@ -53,11 +53,15 @@ Table.prototype.clear = function() {
 
 Table.prototype.updateCounts = function() {
   var i = 0;
+  var total = 0;
   var deck = this;
   this.rowTypes.forEach(function(type) {
-    deck.counts[i].innerHTML = "(" + deck[type]().length + ")";
+    var len = deck[type]().length;
+    deck.counts[i].innerHTML = "(" + len + ")";
+    total += len;
     i++;
   });
+  $("div.total")[0].innerHTML = "Total Cards: " + total;
 };
 
 Table.prototype.handleDragStart = function(e) {
