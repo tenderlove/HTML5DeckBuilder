@@ -3,6 +3,10 @@ div.container {
   overflow-x: scroll;
 }
 
+div.card-headers {
+  font-size: .9em;
+}
+
 form {
   padding-top: 10px;
 }
