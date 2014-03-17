@@ -262,7 +262,7 @@ Table.prototype.addCardToTarget = function(card, loc) {
 }
 
 Table.prototype.isMember = function(img) {
-  return $(img).parents("div.deck")[0];
+  return $(img).parents("div.boardlist")[0];
 }
 
 Table.prototype.clearCharts = function() {
