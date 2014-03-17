@@ -291,8 +291,7 @@ $(document).ready(function() {
 
     $("#cardlist").change(function(data) {
       var card = $("#cardlist option:selected").data('card');
-      console.log(card);
-      
+            
       if(!card) {
         // nothing selected...
         return;
