@@ -128,7 +128,7 @@ Table.prototype.manaDistribution = function() {
   var rowTypes = this.rowTypes.filter(function(type) {
     return type != "lands";
   });
-  for(var cmc = minCost; cmc < maxCost; cmc++) {
+  for(var cmc = minCost; cmc <= maxCost; cmc++) {
     var typeToCard = {}
     var list = group[cmc] || [];
     list.forEach(function(pair) {
