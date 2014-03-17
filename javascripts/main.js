@@ -189,17 +189,18 @@ function drawFirstHandProbability(deck) {
 }
 
 function drawManaCurve(deck) {
-  var data = google.visualization.arrayToDataTable(
-      [['Mana', 'Converted Mana Cost']].concat(deck.manaDistribution())
-  );
+  var dataArry = [
+      ['Casting Cost', 'Creatures', 'Spells', 'Artifacts', 'Enchantments', 'Planeswalkers']].concat(deck.manaDistribution());
+  var data = google.visualization.arrayToDataTable(dataArry);
 
   var options = {
     title: 'Mana Curve',
-    curveType: 'function',
-    legend: { position: 'bottom' }
+    isStacked: true,
+    legend: { position: 'bottom' },
+    hAxis: {title: 'Converted Mana Cost', titleTextStyle: {color: 'red'}}
   };
 
-  var chart = new google.visualization.LineChart(document.getElementById('manacurve'));
+  var chart = new google.visualization.ColumnChart(document.getElementById('manacurve'));
   chart.draw(data, options);
 }
 

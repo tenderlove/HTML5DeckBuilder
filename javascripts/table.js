@@ -101,14 +101,44 @@ Table.prototype.addCard = function(card, loc) {
   this.updateCounts();
 };
 
+Table.prototype.eachType = function(fun) {
+  var deck = this;
+  this.rowTypes.forEach(function(type) {
+    fun(type, deck[type]());
+  });
+};
+
 Table.prototype.manaDistribution = function() {
   var group = {};
-  this.cards().forEach(function(card) {
-    group[card.cmc] = (group[card.cmc] || 0) + 1;
+  var maxCost = 0;
+  var minCost = null;
+  this.eachType(function(type, cards) {
+    cards.forEach(function(card) {
+      if (!group[card.cmc]) {
+        group[card.cmc] = [];
+      }
+      group[card.cmc].push([type, card]);
+      if (maxCost < card.cmc) { maxCost = card.cmc; }
+      if (!minCost || card.cmc < minCost) { minCost = card.cmc; }
+    });
   });
-  return Object.keys(group).map(Number).sort().map(function(num) {
-    return [num, group[num]];
+
+  var rows = [];
+  var deck = this;
+  var rowTypes = this.rowTypes.filter(function(type) {
+    return type != "lands";
   });
+  for(var cmc = minCost; cmc < maxCost; cmc++) {
+    var typeToCard = {}
+    var list = group[cmc] || [];
+    list.forEach(function(pair) {
+      typeToCard[pair[0]] = (typeToCard[pair[0]] || 0) + 1;
+    });
+    rows.push([cmc].concat(rowTypes.map(function(type) {
+      return (typeToCard[type] || 0);
+    })));
+  }
+  return rows;
 }
 
 Table.prototype.isEmpty = function() {
@@ -191,7 +221,10 @@ Table.prototype.firstHandProbability = function() {
   return Object.keys(group).map(function(key) {
     // Calculate the probability of drawing *none*, then subtract from 100%
     return [key, 1 - deck.HYPGEOMDIST(0, 7, group[key], cards.length)];
-  }).sort(function(a,b) { return a[1] < b[1]; });
+  }).sort(function(a,b) {
+    if (a[1] < b[1]) return 1;
+    if (a[1] > b[1]) return -1;
+    return 0; });
 };
 
 Table.prototype.cards = function() {
