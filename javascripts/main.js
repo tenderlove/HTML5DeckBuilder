@@ -7,9 +7,13 @@ function handleDragOver(e) {
 }
 
 function addOne(deck) {
-  var option = $("#cardlist option:selected")[0];
-  var card = jQuery.data(option, 'card');
-
+  var card = $("#cardlist option:selected").data('card');
+  
+  if(!card) {
+    // nothing selected...
+    return false;
+  }
+  
   var types = [
     ["Planeswalker", "planeswalkers"],
     ["Creature",     "creatures"],
@@ -52,22 +56,14 @@ var mvidToCards = {};
 
 function addDeckList(savedDecks, form) {
   var select = $("select", form);
-  var node = select[0];
-  while (node.firstChild) {
-    node.removeChild(node.firstChild);
-  }
-
+  select.empty();
+  
   // Default empty option
-  var option = document.createElement("option");
-  option.text = "";
-  option.value = "";
-  select.append(option);
+  select.append($('<option></option>'));
 
-  savedDecks.forEach(function(deck) {
-    var option = document.createElement("option");
-    option.text = deck['name'];
-    option.value = deck['name'];
-    select.append(option);
+  $.each(savedDecks, function(i, deck) {
+    select.append($('<option></option>')
+        .attr('value', deck['name']).text(deck['name']));
   });
 }
 
@@ -172,19 +168,13 @@ function drawCardTypeDistribution(deck) {
 
 function drawFirstHandProbability(deck) {
   var firstHandProb = deck.firstHandProbability();
-  var table = document.getElementById("firsthandlist");
-
-  firstHandProb.forEach(function(val) {
-    var tr = document.createElement('tr');
-    var tdName = document.createElement('td');
-    var tdProb = document.createElement('td');
-    tdName.innerHTML = val[0];
-    tdName.className = "cardname";
-    tdProb.innerHTML = (val[1] * 100).toFixed(2) + "%";
-    tdProb.className = "probability";
-    tr.appendChild(tdName);
-    tr.appendChild(tdProb);
-    table.appendChild(tr);
+  var table = $('#firsthandlist');
+  
+  $.each(firstHandProb, function(i, val) {
+    table.append($('<tr></tr>').append(
+        $('<td></td>').addClass('cardname').text(val[0]),
+        $('<td></td>').addClass('probability').text(
+            (val[1] * 100).toFixed(2) + "%")));        
   });
 }
 
@@ -207,12 +197,14 @@ function drawManaCurve(deck) {
 $(document).ready(function() {
   var deck = new Table($("div.deck")[0]);
   var trash = document.querySelector('div.trash');
+  
   trash.addEventListener('dragover', handleDragOver, false);
   trash.addEventListener('drop', function (e) {
     if (e.stopPropagation) { e.stopPropagation(); }
     deck.removeCard(dragSrcEl);
     return false;
   }, false);
+  
   $("#addone").click(function() { return addOne(deck); });
   $("#addfour").click(function() { return addFour(deck); });
 
@@ -264,59 +256,58 @@ $(document).ready(function() {
       if (a.name < b.name) return -1;
       return 0;
     });
-
-    var selectList = $('#cardlist');
-    var options = cards.map(function(card) {
-      var option = document.createElement('option');
-      option.value = card.multiverseid;
-      option.innerHTML = card.name;
-      jQuery.data(option, "card", card);
-      return option;
+    
+    var options = $.map(cards, function(card) {
+        return $('<option></option>')
+            .attr('value', card.multiverseid)
+            .text(card.name)            
+            .data('card', card);        
+    });    
+    
+    $('#cardlist').append(options);
+            
+    $.each(data, function(key, set) {
+        $.each(set.cards, function(i, card) {
+            card.imgUrl = "http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + card.multiverseid + "&type=card";
+            mvidToCards[card.multiverseid] = card;
+        });
     });
-
-    options.forEach(function(option) { selectList.append(option); });
-
-    for(var key in data) {
-      data[key].cards.forEach(function(card) {
-        card.imgUrl = "http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=" + card.multiverseid + "&type=card";
-        mvidToCards[card.multiverseid] = card;
-      })
-    }
-
+            
     $("form input[name='filter']").change(function () {
-      var txt = options[0].text.toLowerCase();
-      var val = this.value;
+      var val = $(this).val();      
       var found = options;
       
       if (val != "") {
-        found = options.filter(function(option) {
-          var txt = option.text.toLowerCase();
-          var idx = txt.indexOf(val);
-          return(idx > -1);
+        found = options.filter(function(option) {           
+          var txt = option.text().toLowerCase();
+          return txt.indexOf(val) > -1;
         });
       }
 
-      var node = document.getElementById("cardlist");
-      while (node.firstChild) {
-        node.removeChild(node.firstChild);
-      }
-      found.forEach(function(option) { node.appendChild(option); });
+      $('#cardlist option').detach(); // keep data
+      $('#cardlist').append(found);
+      
     }).keyup( function () { $(this).change(); });
 
     $("#cardlist").change(function(data) {
-      var option = $("option:selected", this);
-      var card = jQuery.data(option[0], "card");
-      var img = document.getElementById('preview')
-      jQuery.data(img, "card", card);
-      img.src = card.imgUrl;
-      img.addEventListener("dragstart", function(e) {
-        this.style.opacity = "0.4";
-        dragSrcEl = this;
-        e.dataTransfer.effectAllowed = "move";
-      }, false);
-      img.addEventListener("dragend", function(e) {
-        this.style.opacity = "1.0";
-      }, false);
+      var card = $("#cardlist option:selected").data('card');
+      console.log(card);
+      
+      if(!card) {
+        // nothing selected...
+        return;
+      }
+      
+      $('#preview')
+        .attr('src', card.imgUrl)
+        .on('dragstart', function(e) {
+            this.style.opacity = "0.4";
+            dragSrcEl = this;
+            e.originalEvent.dataTransfer.effectAllowed = "move";
+        })
+        .on('dragend', function(e) {
+            this.style.opacity = "1.0";
+        });                  
     });
   });
 });
