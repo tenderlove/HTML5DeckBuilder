@@ -1,10 +1,18 @@
 function Table(root) {
   this.root = root;
   var cols = root.querySelectorAll("div.boardlist > div");
+  this.counts = root.querySelectorAll("div.card-headers span");
   var table = this;
 
+  var cardColumns = {};
+  var rowTypes = [];
+  
   // Drop cards in particular columns
   [].forEach.call(cols, function(col) {
+    var type = col.className.split(/\s/)[1];
+    cardColumns[type] = $(col);
+    rowTypes.push(type);
+
     col.addEventListener('dragover', handleDragOver, false);
     col.addEventListener('drop', function(e) {
       if (e.stopPropagation) { e.stopPropagation(); }
@@ -17,12 +25,8 @@ function Table(root) {
     }, false);
   });
 
-  var cardColumns = {};
-  
-  this.rowTypes.forEach(function(type) {
-    cardColumns[type] = $("div." + type);
-  });
   this.cardColumns = cardColumns;
+  this.rowTypes = rowTypes;
 }
 
 Table.prototype.rowTypes =
@@ -44,6 +48,16 @@ Table.prototype.clear = function() {
     }
   });
   this.clearCharts();
+  this.updateCounts();
+};
+
+Table.prototype.updateCounts = function() {
+  var i = 0;
+  var deck = this;
+  this.rowTypes.forEach(function(type) {
+    deck.counts[i].innerHTML = "(" + deck[type]().length + ")";
+    i++;
+  });
 };
 
 Table.prototype.handleDragStart = function(e) {
@@ -72,6 +86,7 @@ Table.prototype.setDeck = function(deck) {
   }
   this.alignImages();
   this.drawCharts();
+  this.updateCounts();
 };
 
 Table.prototype.addCard = function(card, loc) {
@@ -79,6 +94,7 @@ Table.prototype.addCard = function(card, loc) {
   this.addCardToTarget(card, thing);
   this.alignImages();
   this.drawCharts();
+  this.updateCounts();
 };
 
 Table.prototype.manaDistribution = function() {
@@ -247,6 +263,7 @@ Table.prototype.removeCard = function(img) {
   div.parentNode.removeChild(div);
   this.alignImages();
   this.drawCharts();
+  this.updateCounts();
 }
 
 Table.prototype.alignImages = function() {
