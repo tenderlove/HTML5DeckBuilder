@@ -65,3 +65,12 @@ div.card img {
 div.boardlist > div {
   height: 100%;
 }
+
+div.color-filters {
+  height: auto;
+  border: none;
+}
+
+div.color-filters label{
+  padding-left: 7px;
+}
