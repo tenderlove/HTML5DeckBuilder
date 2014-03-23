@@ -246,7 +246,7 @@ $(document).ready(function() {
     return false;
   });
 
-  addDeckList(storage.read(), $("#deck-controls"));
+  addDeckList(storage.read(), $("#deck-controls")); 
 
   $.getJSON("allsets.json", function(data) {
     var cards = ["BNG", "THS", "M14", "DGM", "GTC", "RTR"].reduce(function(prev, curr) {
@@ -288,6 +288,21 @@ $(document).ready(function() {
       $('#cardlist').append(found);
       
     }).keyup( function () { $(this).change(); });
+
+    //
+    // handler for color filters
+    $('.color-filter').click(function(e){ 
+      var color = $(e.target).attr('name').toLowerCase(); 
+      $.each(cards, function(i, card) {
+        if(card.colors){
+          for(var i=0; i< card.colors.length; i++){
+            if(card.colors[i].toLowerCase() === color) {
+              $('#cardlist option[value="' + card.multiverseid + '"]').prop('disabled', !e.target.checked); 
+            }
+          }
+        }
+      });
+    });
 
     $("#cardlist").change(function(data) {
       var card = $("#cardlist option:selected").data('card');
