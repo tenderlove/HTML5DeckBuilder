@@ -17,8 +17,26 @@
     <link rel="stylesheet" href="stylesheets/main.css">
 
     <script src="javascripts/underscore.js"></script>
+    <script src="javascripts/handlebars.js"></script>
+    <script src="javascripts/simulate.js"></script>
     <script src="javascripts/table.js"></script>
     <script src="javascripts/main.js"></script>
+
+    <script id="simulate-firstentry-template" type="text/x-handlebars-template">
+<tr data-multiverseid="{{multiverseid}}">
+  <td class="spanner">{{name}}</td>
+  <td class="spanner">{{manaCost}}</td>
+  <td>{{handSize}}</td>
+  <td>{{percentage}}</td>
+</tr>
+    </script>
+
+    <script id="simulate-entry-template" type="text/x-handlebars-template">
+<tr data-multiverseid="{{multiverseid}}">
+  <td>{{handSize}}</td>
+  <td>{{percentage}}</td>
+</tr>
+    </script>
 
     <script>
       google.load("visualization", "1", {packages:["corechart"]});
@@ -46,7 +64,7 @@
           </form>
         </div>
       </div>
-      <div class="row selection deck">
+      <div class="row deck">
         <div class="col-md-3">
           <img id="preview" src="images/back.jpg" />
           <form class="form-inline">
@@ -140,6 +158,21 @@
             <div id="colordist"    style="width: 270px; height: 270px;"></div>
             <div id="symboldist"   style="width: 270px; height: 270px;"></div>
             <div id="cardtypedist" style="width: 270px; height: 270px;"></div>
+          </div>
+
+          <div> <!-- simulation -->
+            <a id="simulate" href="#">Simulate</a>
+            <table class="table table-condensed" id="simulation">
+              <thead>
+                <tr>
+                  <th>Card Name</th>
+                  <th>Mana Cost</th>
+                  <th>Hand Size</th><th>Playable %</th>
+                </tr>
+              </thead>
+              <tbody>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>

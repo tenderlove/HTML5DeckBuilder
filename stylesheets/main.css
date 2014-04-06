@@ -10,15 +10,12 @@ div.card-headers {
 form {
   padding-top: 10px;
 }
-div.selection {
+
+div.trash {
   text-align: center;
 }
 form input, form select {
   width: 100%;
-}
-
-td.cardname {
-  text-align: left;
 }
 
 #firsthand {

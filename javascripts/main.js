@@ -202,11 +202,8 @@ function downloadDecks(deck) {
     });
   })));
 
-  var cards = allIds.map(function(id) {
-    return _.clone(mvidToCards[id]);
-  });
+  var cards = allIds.map(function(id) { return _.clone(mvidToCards[id]); });
   cards.forEach(function(card) { delete card["imgUrl"]; });
-  console.log(cards);
   return {
     "decks": decks,
     "cards": cards
@@ -232,8 +229,53 @@ $(document).ready(function() {
       encodeURIComponent(JSON.stringify(download));
     this.href = dlstr;
     this.download = "decks.json"
-    console.log(dlstr);
     return true;
+  });
+
+  $("#simulate").click(function() {
+    var simulator = new Simulator(deck.cards());
+    var source   = $("#simulate-firstentry-template").html();
+    var firstRow = Handlebars.compile(source);
+
+    var source   = $("#simulate-entry-template").html();
+    var rowTemplate = Handlebars.compile(source);
+    var dest   = $("#simulation > tbody");
+
+
+    var counts = {};
+    simulator.cards.forEach(function(card) {
+      if(!card.land) {
+        counts[card.multiverseid] = 0;
+      }
+    });
+
+    for(var handSize = 7; handSize < 12; handSize++) {
+      console.log("start");
+      var itrnum = 100000;
+      var playCount = simulator.simulate(handSize, itrnum, _.clone(counts));
+      console.log("finish");
+
+      var keys = _.sortBy(_.keys(playCount), function(key) { return playCount[key]; });
+      keys.forEach(function(key) {
+        var card = mvidToCards[key];
+        var rows = $("tr[data-multiverseid=" + card.multiverseid +"]", dest);
+        if (rows.length > 0) {
+          var row = rowTemplate({ "percentage": (playCount[key] / itrnum),
+                          "multiverseid": card.multiverseid,
+                          "handSize": handSize });
+          rows.last().after(row);
+          $("td.spanner").attr("rowspan", rows.length + 1);
+        } else {
+          var row = firstRow({ "name": card.name,
+                               "percentage": (playCount[key] / itrnum),
+                               "manaCost": card.manaCost,
+                               "multiverseid": card.multiverseid,
+                               "handSize": handSize });
+          dest.append(row);
+        }
+      });
+    }
+    return false;
   });
 
   $("#load").click(function() {
