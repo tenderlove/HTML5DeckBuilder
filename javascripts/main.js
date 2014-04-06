@@ -194,6 +194,25 @@ function drawManaCurve(deck) {
   chart.draw(data, options);
 }
 
+function downloadDecks(deck) {
+  var decks = storage.read();
+  var allIds = _.uniq(_.flatten(decks.map(function(thisDeck) {
+    return deck.rowTypes.map(function(type) {
+      return thisDeck[type];
+    });
+  })));
+
+  var cards = allIds.map(function(id) {
+    return _.clone(mvidToCards[id]);
+  });
+  cards.forEach(function(card) { delete card["imgUrl"]; });
+  console.log(cards);
+  return {
+    "decks": decks,
+    "cards": cards
+  };
+}
+
 $(document).ready(function() {
   var deck = new Table($("div.deck")[0]);
   var trash = document.querySelector('div.trash');
@@ -207,6 +226,15 @@ $(document).ready(function() {
   
   $("#addone").click(function() { return addOne(deck); });
   $("#addfour").click(function() { return addFour(deck); });
+  $("#download").click(function() {
+    var download = downloadDecks(deck);
+    var dlstr = "data:application/octet-stream;charset=utf-8," +
+      encodeURIComponent(JSON.stringify(download));
+    this.href = dlstr;
+    this.download = "decks.json"
+    console.log(dlstr);
+    return true;
+  });
 
   $("#load").click(function() {
     var deckName = $("select", $(this).parents("form")).val();
